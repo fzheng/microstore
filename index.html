@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html ng-app="store">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>My Store</title>
+	<link rel="stylesheet" href="styles/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="styles/bootstrap.min.css">
+	<link rel="stylesheet" href="styles/list-grid-view.css">
+	<script src="js/jquery-2.1.1.min.js"></script>
+	<script src="js/angular.min.js"></script>
+	<script src="js/angular-route.min.js"></script>
+	<script src="js/angular-animate.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/ui-bootstrap.min.js"></script>
+	<script src="js/app.js"></script>
+</head>
+<body ng-controller="StoreController as storeCtrl">
+	<div class="container" ng-controller="GridController as gridCtrl">
+		<div class="well well-sm">
+			<strong>My Store</strong>
+			<div class="btn-group">
+				<a href="#" id="list" class="btn btn-default btn-sm" ng-click="gridCtrl.selectGrid(0)">
+					<span class="glyphicon glyphicon-th-list"></span>List
+				</a>
+				<a href="#" id="grid" class="btn btn-default btn-sm" ng-click="gridCtrl.selectGrid(1)">
+					<span class="glyphicon glyphicon-th"></span>Grid
+				</a>
+			</div>
+			<div class="col-sm-3 pull-right">
+				<form class="form-search">
+					<div class="input-group">
+						<input type="text" class="form-control" ng-model="searchText">
+						<span class="input-group-btn">
+							<button type="submit" class="btn btn-default"><i class="glyphicon glyphicon-search"></i></button>
+						</span>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div id="products" class="row list-group">
+			<div class="item  col-xs-4 col-lg-4" ng-class="gridCtrl.class" ng-repeat="product in storeCtrl.products | filter:searchText | orderBy: 'price'" ng-hide="product.soldOut">
+				<div class="thumbnail">
+					<img class="group list-group-image" ng-src="{{product.image}}" alt="" />
+					<div class="caption">
+						<h4 class="group inner list-group-item-heading">
+							{{product.name | uppercase}}
+						</h4>
+						<div class="group inner list-group-item-text">
+						<section ng-controller="PanelController as panel">
+							<ul class="nav nav-pills">
+								<li ng-class="{active:panel.isSelected(1)}">
+									<a href ng-click="panel.selectTab(1)">Description</a>
+								</li>
+								<li ng-class="{active:panel.isSelected(2)}">
+									<a href ng-click="panel.selectTab(2)">Specifications</a>
+								</li>
+								<li ng-class="{active:panel.isSelected(3)}">
+									<a href ng-click="panel.selectTab(3)">Reviews</a>
+								</li>
+							</ul>
+							<div class="panel" ng-show="panel.isSelected(1)">
+								<p>{{product.description}}</p>
+							</div>
+							<div class="panel" ng-show="panel.isSelected(2)">
+								<p>{{product.specification}}</p>
+							</div>
+							<div class="panel" ng-show="panel.isSelected(3)">
+								<ul>
+									<h4>Reviews</h4>
+									<li ng-repeat="review in product.reviews">
+										<blockquote>
+											<strong>{{review.stars}} Stars</strong>
+											{{review.body}}
+											<cite class="clearfix">—{{review.author}}</cite>
+										</blockquote>
+									</li>
+								</ul>
+								<form name="reviewForm" ng-controller="ReviewController as reviewCtrl" ng-submit="reviewCtrl.addReview(product)">
+									<blockquote>
+										<strong>{{reviewCtrl.review.stars}} Stars</strong>
+										{{reviewCtrl.review.body}}
+										<cite class="clearfix">—{{reviewCtrl.review.author}}</cite>
+									</blockquote>
+									<h4>Submit a Review</h4>
+									<fieldset class="form-group">
+										<select ng-model="reviewCtrl.review.stars" class="form-control" ng-options="stars for stars in [5,4,3,2,1]" title="Stars">
+											<option value="">Rate the Product</option>
+										</select>
+									</fieldset>
+									<fieldset class="form-group">
+										<textarea ng-model="reviewCtrl.review.body" class="form-control" placeholder="Write a short review of the product..." title="Review"></textarea>
+									</fieldset>
+									<fieldset class="form-group">
+										<input ng-model="reviewCtrl.review.author" type="email" class="form-control" placeholder="your@email.com" title="Email" />
+									</fieldset>
+									<fieldset class="form-group">
+										<input type="submit" class="btn btn-primary pull-right" value="Submit Review" />
+									</fieldset>
+								</form>
+							</div>
+						</section>
+						</div>
+						<div class="row">
+							<div class="col-xs-12 col-md-6">
+								<p class="lead">
+									{{product.price | currency}}
+								</p>
+							</div>
+							<div class="col-xs-12 col-md-6">
+								<a class="btn btn-success" href="#" ng-show="product.inStock">Add to cart</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
